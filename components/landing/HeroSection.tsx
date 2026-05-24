@@ -15,7 +15,8 @@ export function HeroSection() {
       id="beranda"
       className="relative flex min-h-[100svh] flex-col contour-bg"
     >
-      <div className="absolute inset-0 geo-grid opacity-80" />
+      {/* Background Decorative Spotlight to give Hero Section extra glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" />
       <div className="relative mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-4 pb-12 pt-20 lg:px-8">
         <div className="grid w-full items-center gap-10 lg:grid-cols-2 lg:gap-12">
         <motion.div

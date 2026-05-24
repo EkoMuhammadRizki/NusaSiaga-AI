@@ -27,6 +27,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { clearMockSession, getMockRole, setMockSession } from "@/lib/auth-mock";
+import Swal from "sweetalert2";
+
+// Premium dark themed SweetAlert template matching NusaSiaga AI's style
+const darkSwal = Swal.mixin({
+  background: "#0F172A",
+  color: "#F8FAFC",
+  confirmButtonColor: "#10B981",
+  cancelButtonColor: "#EF4444",
+  customClass: {
+    popup: "border border-slate-800 rounded-2xl shadow-2xl font-sans",
+    title: "text-lg font-bold text-white",
+    htmlContainer: "text-sm text-slate-300",
+  },
+});
 
 function SettingToggle({
   id,
@@ -68,8 +82,20 @@ export function SettingsPanel() {
   }, []);
 
   const handleLogout = () => {
-    clearMockSession();
-    router.push("/login");
+    darkSwal.fire({
+      title: "Konfirmasi Logout",
+      text: "Apakah Anda yakin ingin keluar dari Sesi Command Center?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Ya, Keluar",
+      cancelButtonText: "Batal",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        clearMockSession();
+        router.push("/");
+      }
+    });
   };
 
   return (
@@ -144,7 +170,17 @@ export function SettingsPanel() {
                 Peran menentukan tampilan badge di topbar dashboard.
               </p>
             </div>
-            <Button variant="secondary" onClick={() => setMockSession(role)}>
+            <Button variant="secondary" onClick={() => {
+              setMockSession(role);
+              darkSwal.fire({
+                title: "Profil Diperbarui!",
+                text: `Peran Anda telah berhasil diatur sebagai ${role}.`,
+                icon: "success",
+                confirmButtonText: "Selesai"
+              }).then(() => {
+                if (typeof window !== "undefined") window.location.reload();
+              });
+            }}>
               Simpan Profil
             </Button>
           </CardContent>
@@ -337,7 +373,7 @@ export function SettingsPanel() {
             <div className="rounded-xl border border-white/10 bg-white/5 p-4">
               <p className="text-sm text-white/70">
                 Anda masuk sebagai <span className="font-semibold text-emerald-300">{role}</span>
-                . Logout akan mengakhiri sesi simulasi dan mengarahkan ke halaman login.
+                . Logout akan mengakhiri sesi simulasi dan mengarahkan ke halaman beranda.
               </p>
             </div>
 
@@ -367,8 +403,20 @@ export function SettingsPanel() {
                 size="sm"
                 className="mt-3 border-red-500/30 text-red-300 hover:bg-red-500/10"
                 onClick={() => {
-                  clearMockSession();
-                  if (typeof window !== "undefined") window.location.reload();
+                  darkSwal.fire({
+                    title: "Reset Preferensi?",
+                    text: "Apakah Anda yakin ingin meriset preferensi lokal? Sesi simulasi Anda akan diatur ulang.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya, Reset",
+                    cancelButtonText: "Batal",
+                    reverseButtons: true
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      clearMockSession();
+                      if (typeof window !== "undefined") window.location.reload();
+                    }
+                  });
                 }}
               >
                 Reset Preferensi Lokal

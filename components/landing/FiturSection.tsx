@@ -18,12 +18,12 @@ const DisasterDigitalTwinMap = dynamic(
 
 const features = [
   { title: "Real-Time Risk Map", viz: "map" },
-  { title: "AI Risk Prediction", viz: "gauge" },
   { title: "Disaster Digital Twin", viz: "digital-twin" },
   { title: "Explainable Risk Reasoning", viz: "text" },
   { title: "Citizen & Field Report", viz: "timeline" },
   { title: "Early Warning Notification", viz: "timeline" },
   { title: "Edge Intelligence", viz: "text" },
+  { title: "AI Risk Prediction", viz: "gauge" },
   { title: "Decision Support Dashboard", viz: "chart" },
 ];
 
@@ -47,7 +47,7 @@ export function FiturSection() {
               return (
                 <motion.div
                   key={f.title}
-                  className={`relative h-full w-full md:col-span-2 ${f.viz === "map" ? "md:row-span-3" : "md:row-span-2"}`}
+                  className="relative h-full w-full row-span-4 md:col-span-2 md:row-span-3"
                   whileHover={{ scale: 1.01 }}
                 >
                   <div className="absolute inset-0">
@@ -65,8 +65,8 @@ export function FiturSection() {
               <motion.div
                 key={f.title}
                 className={`glass-card overflow-hidden rounded-2xl p-5 glow-emerald-hover ${
-                  i === 2 ? "md:col-span-2 md:row-span-2" : ""
-                } ${i === 7 ? "lg:col-span-2" : ""}`}
+                  i === 7 ? "lg:col-span-2" : ""
+                }`}
                 whileHover={{ scale: 1.01 }}
               >
                 <h3 className="font-display font-semibold tracking-tight text-white">{f.title}</h3>

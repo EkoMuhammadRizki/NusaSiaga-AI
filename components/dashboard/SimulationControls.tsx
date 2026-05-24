@@ -34,12 +34,12 @@ export function SimulationControls({
         <div>
           <div className="flex justify-between">
             <Label>Curah Hujan (mm/24j)</Label>
-            <span className="text-sm font-bold text-emerald-400">{rainfall}</span>
+            <span className="text-sm font-bold text-emerald-400">{rainfall} mm</span>
           </div>
           <Slider
             value={[rainfall]}
             min={0}
-            max={200}
+            max={300}
             step={5}
             onValueChange={([v]) => onRainfallChange(v)}
             className="mt-2"
@@ -48,7 +48,7 @@ export function SimulationControls({
         <div>
           <div className="flex justify-between">
             <Label>Tinggi Muka Air (m)</Label>
-            <span className="text-sm font-bold text-emerald-400">{waterLevel.toFixed(1)}</span>
+            <span className="text-sm font-bold text-emerald-400">{waterLevel.toFixed(1)} m</span>
           </div>
           <Slider
             value={[waterLevel * 10]}

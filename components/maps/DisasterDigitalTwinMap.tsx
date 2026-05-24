@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapContainer, GeoJSON, Marker, Tooltip, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Marker, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import { regions } from "@/lib/data/regions";
 import type { Region } from "@/lib/types";
+import { Plus, Minus } from "lucide-react";
 
 type FilterType = "Semua" | "Banjir" | "Longsor" | "Cuaca Ekstrem";
 
@@ -18,6 +19,20 @@ function getRiskStatus(score: number) {
   if (score > 70) return "Kritis";
   if (score >= 40) return "Sedang";
   return "Rendah";
+}
+
+function CustomZoomControl() {
+  const map = useMap();
+  return (
+    <div className="absolute bottom-4 right-4 z-[400] flex flex-col gap-2">
+      <button onClick={() => map.zoomIn()} className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur transition-colors">
+        <Plus className="h-4 w-4" />
+      </button>
+      <button onClick={() => map.zoomOut()} className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur transition-colors">
+        <Minus className="h-4 w-4" />
+      </button>
+    </div>
+  );
 }
 
 function LiveCoordinates() {
@@ -126,10 +141,16 @@ export function DisasterDigitalTwinMap({ className }: { className?: string }) {
           center={[-2.5, 118]}
           zoom={5}
           zoomControl={false}
+          maxBounds={[[-12, 94], [8, 142]]}
+          maxBoundsViscosity={1.0}
           className="h-full w-full"
           style={{ background: "#050B14" }}
           attributionControl={false}
         >
+          <TileLayer
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          />
           {geoData && (
             <GeoJSON 
               data={geoData} 
@@ -179,12 +200,13 @@ export function DisasterDigitalTwinMap({ className }: { className?: string }) {
           })}
 
           <LiveCoordinates />
+          <CustomZoomControl />
         </MapContainer>
       </div>
 
       {/* Footer & Legenda */}
-      <div className="flex items-center justify-between border-t border-slate-800/50 bg-[#0B1120] px-4 py-3 sm:px-6">
-        <div className="flex items-center gap-4 text-xs font-medium text-slate-400">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-t border-slate-800/50 bg-[#0B1120] px-4 py-3 sm:px-6">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs font-medium text-slate-400">
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-rose-500"></span>
             <span>Kritis (&gt;70)</span>

@@ -1,9 +1,9 @@
 "use client";
 
-import { MapContainer, GeoJSON, Marker, Tooltip, ZoomControl, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Marker, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import { useEffect, useState } from "react";
-import { Clock, Download, Radio, CloudRain, AlertTriangle, Layers, Plus, Minus } from "lucide-react";
+import { Clock, Radio, CloudRain, AlertTriangle, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { regions } from "@/lib/data/regions";
 
@@ -28,9 +28,6 @@ function CustomZoomControl() {
       </button>
       <button onClick={() => map.zoomOut()} className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur transition-colors">
         <Minus className="h-4 w-4" />
-      </button>
-      <button className="mt-2 flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur transition-colors">
-        <Layers className="h-4 w-4" />
       </button>
     </div>
   );
@@ -175,10 +172,16 @@ export function RealtimeRiskMap({ className, onRegionSelect, selectedId, variant
           center={[-2.5, 118]}
           zoom={5}
           zoomControl={false}
+          maxBounds={[[-12, 94], [8, 142]]}
+          maxBoundsViscosity={1.0}
           className="h-full w-full"
           style={{ background: "#050B14" }}
           attributionControl={false}
         >
+          <TileLayer
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          />
           {geoData && (
             <GeoJSON 
               data={geoData} 
@@ -260,10 +263,6 @@ export function RealtimeRiskMap({ className, onRegionSelect, selectedId, variant
             <span className="text-[10px] font-bold text-slate-400 font-mono">AWS Network: 99.8%</span>
           </div>
         </div>
-        <button className="flex items-center gap-1.5 text-slate-400 transition-colors hover:text-white">
-          <Download className="h-3.5 w-3.5" />
-          <span className="text-[10px] font-bold font-mono">Export Dataset</span>
-        </button>
       </div>
       
       <style jsx global>{`

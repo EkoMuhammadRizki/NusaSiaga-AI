@@ -12,10 +12,12 @@ import { CaraKerjaSection } from "./CaraKerjaSection";
 import { TargetUserSection } from "./TargetUserSection";
 import { DashboardPreviewSection } from "./DashboardPreviewSection";
 import { CtaSection } from "./CtaSection";
+import { SplashScreen } from "./SplashScreen";
 
 export function LandingWithPilot() {
   return (
     <PilotOnboardingProvider>
+      <SplashScreen />
       <div className="geo-grid min-h-screen">
         <Navbar />
         <main>
