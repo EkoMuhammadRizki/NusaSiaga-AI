@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-export function SplashScreen() {
+export function SplashScreen({ onComplete }: { onComplete?: () => void }) {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(false);
   const [statusIndex, setStatusIndex] = useState(0);
@@ -28,6 +28,7 @@ export function SplashScreen() {
     // End loading screen after 3.5 seconds
     const loadingTimer = setTimeout(() => {
       setIsLoading(false);
+      onComplete?.();
     }, 3500);
 
     return () => {

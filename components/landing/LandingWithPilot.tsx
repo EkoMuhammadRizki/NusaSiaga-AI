@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { PilotOnboardingProvider } from "./pilot/PilotOnboardingContext";
 import { PilotOnboardingPanel } from "./pilot/PilotOnboardingPanel";
 import { Navbar } from "@/components/ui/navbar";
@@ -15,23 +16,27 @@ import { CtaSection } from "./CtaSection";
 import { SplashScreen } from "./SplashScreen";
 
 export function LandingWithPilot() {
+  const [showLanding, setShowLanding] = useState(false);
+
   return (
     <PilotOnboardingProvider>
-      <SplashScreen />
-      <div className="geo-grid min-h-screen">
-        <Navbar />
-        <main>
-          <HeroSection />
-          <TujuanSection />
-          <MasalahSection />
-          <FiturSection />
-          <CaraKerjaSection />
-          <TargetUserSection />
-          <DashboardPreviewSection />
-          <CtaSection />
-        </main>
-        <Footer />
-      </div>
+      <SplashScreen onComplete={() => setShowLanding(true)} />
+      {showLanding && (
+        <div className="geo-grid min-h-screen">
+          <Navbar />
+          <main>
+            <HeroSection />
+            <TujuanSection />
+            <MasalahSection />
+            <FiturSection />
+            <CaraKerjaSection />
+            <TargetUserSection />
+            <DashboardPreviewSection />
+            <CtaSection />
+          </main>
+          <Footer />
+        </div>
+      )}
       <PilotOnboardingPanel />
     </PilotOnboardingProvider>
   );
