@@ -26,8 +26,17 @@ import {
 } from "./types";
 import { buildPilotSummary } from "./buildPilotSummary";
 import { regions } from "@/lib/data/regions";
-import { IndonesiaMapSVG } from "@/components/maps/IndonesiaMapSVG";
+import dynamic from "next/dynamic";
 import { RiskGauge } from "@/components/charts/RiskGauge";
+
+const PilotLeafletMap = dynamic(() => import("./PilotLeafletMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[180px] w-full animate-pulse rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+      <span className="text-xs text-white/40">Loading map...</span>
+    </div>
+  ),
+});
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -550,14 +559,10 @@ export function PilotOnboardingPanel() {
                           <p className="mb-2 text-xs text-white/50">
                             Pilih wilayah di peta
                           </p>
-                          <div className="max-w-full overflow-hidden">
-                            <IndonesiaMapSVG
-                              variant="compact"
+                          <div className="max-w-full overflow-hidden h-[180px]">
+                            <PilotLeafletMap
                               selectedId={form.selectedRegionId}
                               onRegionSelect={handleRegionSelect}
-                              showLegend={false}
-                              showRadar={false}
-                              className="h-[160px] min-h-0"
                             />
                           </div>
                         </div>

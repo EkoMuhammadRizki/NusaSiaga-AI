@@ -50,20 +50,20 @@ export function SplashScreen({ onComplete }: { onComplete?: () => void }) {
 
       <div className="relative z-10 flex flex-col items-center">
         {/* Logo and Text */}
-        <div className="flex items-center gap-5 md:gap-6">
-          {/* Left: Pure Logo Image */}
-          <div className="relative flex items-center justify-center">
+        <div className="flex items-center gap-1 md:gap-2">
+          {/* Left: Pure Logo Image, scaled up to counteract internal image padding */}
+          <div className="relative flex items-center justify-center -mr-2 md:-mr-4">
             <Image
               src="/NusaSiagaAI.png"
               alt="NusaSiaga AI Logo"
-              width={96}
-              height={96}
-              className="relative z-10 object-contain drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+              width={200}
+              height={200}
+              className="relative z-10 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 lg:h-32 lg:w-32 scale-[1.4] object-contain drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]"
             />
           </div>
 
           {/* Right: Brand Text */}
-          <div className="text-hero text-5xl tracking-tighter text-slate-100 md:text-6xl">
+          <div className="text-hero whitespace-nowrap text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter text-slate-100 relative z-20">
             NusaSiaga AI
           </div>
         </div>
