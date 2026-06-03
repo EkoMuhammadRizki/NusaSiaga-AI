@@ -13,8 +13,25 @@ const urgencyVariant = {
   darurat: "awas" as const,
 };
 
-export function CitizenFeed({ extraReports = [] }: { extraReports?: typeof citizenReports }) {
+function ReportImage({ alt }: { alt: string }) {
+  return (
+    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-slate-800/80 border border-white/10 flex items-center justify-center p-2.5">
+      <Image
+        src="/avatar-placeholder.svg"
+        alt={alt}
+        fill
+        className="object-contain opacity-50"
+        unoptimized
+      />
+    </div>
+  );
+}
+
+export function CitizenFeed({ extraReports = [], filterRegionId }: { extraReports?: typeof citizenReports; filterRegionId?: string | null }) {
   const all = [...extraReports, ...citizenReports];
+  const displayedReports = filterRegionId
+    ? all.filter((r) => r.regionId === filterRegionId)
+    : all;
 
   return (
     <Card className="flex flex-col">
@@ -27,20 +44,12 @@ export function CitizenFeed({ extraReports = [] }: { extraReports?: typeof citiz
       <CardContent className="p-0">
         <ScrollArea className="h-[400px] px-4 pb-4">
           <div className="space-y-3">
-            {all.map((report) => (
+            {displayedReports.map((report) => (
               <div
                 key={report.id}
                 className="flex gap-3 rounded-xl border border-white/10 p-2 transition-all hover:border-emerald-500/20"
               >
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
-                  <Image
-                    src={report.imageUrl}
-                    alt={report.category}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
+                <ReportImage alt={report.category} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-1">
                     <p className="truncate text-sm font-medium text-white">{report.author}</p>

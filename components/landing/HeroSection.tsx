@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PilotTriggerButton } from "./pilot/PilotTriggerButton";
 
 import { HeroSimpleConsole } from "./HeroSimpleConsole";
 
@@ -44,10 +45,13 @@ export function HeroSection() {
               </Badge>
             ))}
           </div>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-wrap gap-4">
             <Button size="lg" asChild>
               <Link href="/login">Masuk Dashboard</Link>
             </Button>
+            <PilotTriggerButton size="lg" variant="secondary">
+              Ajukan Pilot Project
+            </PilotTriggerButton>
           </div>
         </motion.div>
 

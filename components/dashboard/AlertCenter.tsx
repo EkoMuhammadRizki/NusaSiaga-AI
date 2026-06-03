@@ -67,9 +67,13 @@ function AlertList({
   );
 }
 
-export function AlertCenter() {
+export function AlertCenter({ filterRegionId }: { filterRegionId?: string | null }) {
   const [items] = useState<Alert[]>(initialAlerts);
   const [selected, setSelected] = useState<Alert | null>(null);
+
+  const displayedItems = filterRegionId
+    ? items.filter((a) => a.regionId === filterRegionId)
+    : items;
 
   return (
     <>
@@ -83,7 +87,7 @@ export function AlertCenter() {
         <CardContent className="p-0">
           <ScrollArea className="h-[420px] px-4 pb-4">
             <ClientOnly fallback={<AlertListSkeleton />}>
-              <AlertList items={items} onSelect={setSelected} />
+              <AlertList items={displayedItems} onSelect={setSelected} />
             </ClientOnly>
           </ScrollArea>
         </CardContent>

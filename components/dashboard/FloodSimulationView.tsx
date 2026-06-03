@@ -21,6 +21,7 @@ interface FloodSimulationViewProps {
   jalurAman: number;
   riskLevel: "RENDAH" | "SIAGA" | "KRITIS";
   floodIntensity: number;
+  filterRegionId?: string | null;
 }
 
 export function FloodSimulationView({
@@ -33,6 +34,7 @@ export function FloodSimulationView({
   jalurAman,
   riskLevel,
   floodIntensity,
+  filterRegionId,
 }: FloodSimulationViewProps) {
   const [loading, setLoading] = useState(false);
 
@@ -62,6 +64,7 @@ export function FloodSimulationView({
                 floodIntensity={floodIntensity} 
                 damBreak={damBreak} 
                 evacuationBlocked={evacuationBlocked} 
+                filterRegionId={filterRegionId}
               />
             </motion.div>
             {loading && (

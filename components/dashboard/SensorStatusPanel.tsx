@@ -11,14 +11,18 @@ const statusConfig = {
   maintenance: { color: "bg-white/30", label: "Maintenance", pulse: false },
 };
 
-export function SensorStatusPanel() {
+export function SensorStatusPanel({ filterRegionId }: { filterRegionId?: string | null }) {
+  const displayedSensors = filterRegionId
+    ? sensors.filter((s) => s.regionId === filterRegionId)
+    : sensors;
+
   return (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="font-display text-base">Status Sensor Live</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {sensors.slice(0, 6).map((sensor) => {
+        {displayedSensors.slice(0, 6).map((sensor) => {
           const cfg = statusConfig[sensor.status];
           return (
             <div

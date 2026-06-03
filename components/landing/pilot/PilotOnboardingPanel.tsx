@@ -252,9 +252,37 @@ export function PilotOnboardingPanel() {
     const done = setTimeout(() => {
       clearInterval(msgInterval);
       clearInterval(progressInterval);
-      setImplementationId(generateImplementationId());
+      const generatedId = generateImplementationId();
+      setImplementationId(generatedId);
       setSubmittedAt(formatTimestamp());
       setPhase("success");
+
+      const pilotSummary = buildPilotSummary(form);
+      const pilotProject = {
+        implementationId: generatedId,
+        institution: {
+          name: form.instansiName,
+          type: form.instansiType,
+          pic: form.picName,
+          email: form.email,
+        },
+        region: {
+          id: form.selectedRegionId,
+          province: form.province,
+          city: form.city,
+          priorityRisks: form.risks,
+          kecamatanCount: form.kecamatanCount,
+        },
+        selectedModules: form.modules,
+        aiRecommendation: {
+          readinessScore: pilotSummary.readiness,
+          status: "Siap untuk Pilot Project",
+          deploymentTimeline: pilotSummary.timeline,
+        }
+      };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("nusasiaga-pilot-project", JSON.stringify(pilotProject));
+      }
     }, duration);
 
     return () => {

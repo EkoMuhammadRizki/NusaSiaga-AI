@@ -55,14 +55,24 @@ function LiveCoordinates() {
   );
 }
 
+function ChangeMapView({ center, zoom }: { center: [number, number]; zoom: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [center, zoom, map]);
+  return null;
+}
+
 export function FloodLeafletMap({ 
   floodIntensity, 
   damBreak = false, 
-  evacuationBlocked = false 
+  evacuationBlocked = false,
+  filterRegionId = null
 }: { 
   floodIntensity: number;
   damBreak?: boolean;
   evacuationBlocked?: boolean;
+  filterRegionId?: string | null;
 }) {
   const [geoData, setGeoData] = useState<any>(null);
 
@@ -133,6 +143,43 @@ export function FloodLeafletMap({
     reasoningText = "⚠️ BAHAYA: Tanggul jebol terdeteksi! Propagasi air meluas cepat ke sektor domestik dan infrastruktur kritis.";
   }
 
+  const filterRegion = filterRegionId ? regions.find((r) => r.id === filterRegionId) : null;
+  const mapCenter: [number, number] = filterRegion && filterRegion.lat && filterRegion.lng
+    ? [filterRegion.lat, filterRegion.lng]
+    : [-2.5, 118];
+  const mapZoom = filterRegion ? 10 : 5;
+
+  const displayedRegions = filterRegionId
+    ? regions.filter((r) => r.id === filterRegionId)
+    : regions;
+
+  // Generate mock closed routes near the filtered region
+  const closedRoutes = filterRegion && filterRegion.lat !== undefined && filterRegion.lng !== undefined
+    ? [
+        {
+          id: "route-1",
+          position: [(filterRegion.lat as number) + 0.02, (filterRegion.lng as number) - 0.03] as [number, number],
+          name: `RUTE BLOKIR: Genangan Tinggi Pesisir Barat ${filterRegion.name}`,
+        },
+        {
+          id: "route-2",
+          position: [(filterRegion.lat as number) - 0.02, (filterRegion.lng as number) + 0.03] as [number, number],
+          name: `RUTE BLOKIR: Luapan Aliran Sungai Timur ${filterRegion.name}`,
+        },
+      ]
+    : [
+        {
+          id: "route-jkt",
+          position: [-6.15, 106.75] as [number, number],
+          name: "RUTE BLOKIR: DAS Ciliwung Meluap",
+        },
+        {
+          id: "route-bdg",
+          position: [-6.95, 107.55] as [number, number],
+          name: "RUTE BLOKIR: Genangan Tinggi Cibeunying",
+        },
+      ];
+
   return (
     <div className="relative h-[400px] w-full overflow-hidden rounded-xl border border-emerald-500/20 bg-[#050B14]">
       {/* Translucent Red Overlay for Tanggul Jebol */}
@@ -143,15 +190,16 @@ export function FloodLeafletMap({
       />
 
       <MapContainer
-        center={[-2.5, 118]}
-        zoom={5}
+        center={mapCenter}
+        zoom={mapZoom}
         zoomControl={false}
-        maxBounds={[[-12, 94], [8, 142]]}
+        maxBounds={filterRegionId ? undefined : [[-12, 94], [8, 142]]}
         maxBoundsViscosity={1.0}
         className="h-full w-full"
         style={{ background: "#050B14" }}
         attributionControl={false}
       >
+        <ChangeMapView center={mapCenter} zoom={mapZoom} />
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -169,7 +217,7 @@ export function FloodLeafletMap({
           />
         )}
 
-        {regions.map((region) => {
+        {displayedRegions.map((region) => {
           if (!region.lat || !region.lng) return null;
           
           // Identify flood-prone regions (Jakarta, Semarang, Bandung)
@@ -246,26 +294,19 @@ export function FloodLeafletMap({
         {/* Closed Evacuation Route Markers when evacuationBlocked is true */}
         {evacuationBlocked && (
           <>
-            <Marker 
-              position={[-6.15, 106.75]} 
-              icon={createClosedRouteIcon()}
-            >
-              <Tooltip direction="top" offset={[0, -10]} opacity={1}>
-                <div className="rounded border border-red-500/20 bg-slate-900 px-2.5 py-1 text-[10px] font-semibold text-red-400">
-                  RUTE BLOKIR: DAS Ciliwung Meluap
-                </div>
-              </Tooltip>
-            </Marker>
-            <Marker 
-              position={[-6.95, 107.55]} 
-              icon={createClosedRouteIcon()}
-            >
-              <Tooltip direction="top" offset={[0, -10]} opacity={1}>
-                <div className="rounded border border-red-500/20 bg-slate-900 px-2.5 py-1 text-[10px] font-semibold text-red-400">
-                  RUTE BLOKIR: Genangan Tinggi Cibeunying
-                </div>
-              </Tooltip>
-            </Marker>
+            {closedRoutes.map((route) => (
+              <Marker 
+                key={route.id}
+                position={route.position} 
+                icon={createClosedRouteIcon()}
+              >
+                <Tooltip direction="top" offset={[0, -10]} opacity={1}>
+                  <div className="rounded border border-red-500/20 bg-slate-900 px-2.5 py-1 text-[10px] font-semibold text-red-400">
+                    {route.name}
+                  </div>
+                </Tooltip>
+              </Marker>
+            ))}
           </>
         )}
 

@@ -63,9 +63,18 @@ interface RealtimeRiskMapProps {
   variant?: "default" | "hero" | "compact";
   showHUD?: boolean;
   showRadarOverlay?: boolean;
+  filterRegionId?: string | null;
 }
 
-export function RealtimeRiskMap({ className, onRegionSelect, selectedId, variant, showHUD, showRadarOverlay }: RealtimeRiskMapProps) {
+function ChangeMapView({ center, zoom }: { center: [number, number]; zoom: number }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [center, zoom, map]);
+  return null;
+}
+
+export function RealtimeRiskMap({ className, onRegionSelect, selectedId, variant, showHUD, showRadarOverlay, filterRegionId }: RealtimeRiskMapProps) {
   const [geoData, setGeoData] = useState<any>(null);
   const [time, setTime] = useState<string>("14:32:05 WIB");
 
@@ -82,6 +91,16 @@ export function RealtimeRiskMap({ className, onRegionSelect, selectedId, variant
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const filterRegion = filterRegionId ? regions.find((r) => r.id === filterRegionId) : null;
+  const mapCenter: [number, number] = filterRegion && filterRegion.lat && filterRegion.lng
+    ? [filterRegion.lat, filterRegion.lng]
+    : [-2.5, 118];
+  const mapZoom = filterRegion ? 10 : 5;
+
+  const displayedRegions = filterRegionId
+    ? regions.filter((r) => r.id === filterRegionId)
+    : regions;
 
   const createCustomIcon = (score: number) => {
     let colorClass = "";
@@ -169,15 +188,16 @@ export function RealtimeRiskMap({ className, onRegionSelect, selectedId, variant
       {/* Map Canvas */}
       <div className="relative flex-1 min-h-0 overflow-hidden rounded-xl border border-slate-800/60 bg-[#050B14]">
         <MapContainer
-          center={[-2.5, 118]}
-          zoom={5}
+          center={mapCenter}
+          zoom={mapZoom}
           zoomControl={false}
-          maxBounds={[[-12, 94], [8, 142]]}
+          maxBounds={filterRegionId ? undefined : [[-12, 94], [8, 142]]}
           maxBoundsViscosity={1.0}
           className="h-full w-full"
           style={{ background: "#050B14" }}
           attributionControl={false}
         >
+          <ChangeMapView center={mapCenter} zoom={mapZoom} />
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -195,7 +215,7 @@ export function RealtimeRiskMap({ className, onRegionSelect, selectedId, variant
             />
           )}
 
-          {regions.map((region) => {
+          {displayedRegions.map((region) => {
             if (!region.lat || !region.lng) return null;
             return (
               <Marker 

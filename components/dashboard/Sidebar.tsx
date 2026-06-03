@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -21,7 +22,7 @@ const menuItems = [
   { href: "/dashboard/alerts", label: "Alerts", icon: Bell },
   { href: "/dashboard/reports", label: "Citizen Reports", icon: Users },
   { href: "/dashboard/data", label: "Data Sources", icon: Database },
-  { href: "/dashboard#analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
@@ -31,6 +32,42 @@ interface SidebarProps {
 
 export function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
+  const [activeModules, setActiveModules] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("nusasiaga-pilot-project");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setActiveModules(parsed.selectedModules || []);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  }, []);
+
+  const displayedItems = menuItems.filter((item) => {
+    if (!activeModules) return true;
+    if (item.label === "Overview" || item.label === "Settings") return true;
+    if (item.label === "Digital Twin") {
+      return activeModules.includes("Digital Twin Simulation") || activeModules.includes("Digital Twin");
+    }
+    if (item.label === "Alerts") {
+      return activeModules.includes("Early Warning") || activeModules.includes("Evacuation Monitoring") || activeModules.includes("Early Warning System");
+    }
+    if (item.label === "Citizen Reports") {
+      return activeModules.includes("Citizen Reporting") || activeModules.includes("Citizen Feed");
+    }
+    if (item.label === "Data Sources") {
+      return activeModules.includes("Sensor Integration") || activeModules.includes("Real-Time Risk Monitoring") || activeModules.includes("IoT Sensor Integration") || activeModules.includes("GIS Risk Mapping");
+    }
+    if (item.label === "Analytics") {
+      return activeModules.includes("AI Risk Prediction") || activeModules.includes("Real-Time Risk Monitoring") || activeModules.includes("Command Center Dashboard") || activeModules.includes("GIS Risk Mapping");
+    }
+    return true;
+  });
 
   return (
     <aside className="flex h-full w-64 flex-col border-r border-white/10 bg-[#0B1F3A]/80 backdrop-blur-xl">
@@ -45,7 +82,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
       </div>
 
       <nav className="flex-1 space-y-1 p-3">
-        {menuItems.map((item) => {
+        {displayedItems.map((item) => {
           const isOverviewActive =
             item.label === "Overview" && pathname === "/dashboard";
 
@@ -54,6 +91,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
             (item.label === "Alerts" && pathname === "/dashboard/alerts") ||
             (item.label === "Citizen Reports" && pathname === "/dashboard/reports") ||
             (item.label === "Data Sources" && pathname === "/dashboard/data") ||
+            (item.label === "Analytics" && pathname === "/dashboard/analytics") ||
             (item.label === "Settings" && pathname === "/dashboard/settings");
 
           const active = isOverviewActive || isSubActive;
